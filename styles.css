@@ -124,7 +124,7 @@ section { position: relative; }
   height: 100svh;
   display: grid; place-items: center;
   text-align: center;
-  padding: 7rem var(--pad) 5rem;
+  padding: 5rem var(--pad) 3rem;
   overflow: hidden;
 }
 .hero-copy { transition: opacity .2s linear; will-change: opacity; }
@@ -139,9 +139,9 @@ section { position: relative; }
 /* holographic medallion */
 .holo {
   position: relative;
-  width: clamp(280px, 48vw, 480px);
+  width: clamp(150px, 21vw, 220px);
   aspect-ratio: 1;
-  margin: 0 auto 2rem;
+  margin: 0 auto 0.8rem;
   perspective: 1100px;
   will-change: opacity;
 }
@@ -191,19 +191,21 @@ section { position: relative; }
 @keyframes holoHue { to { filter: saturate(1.15) brightness(1.1) hue-rotate(360deg); } }
 @keyframes sheen { 0% { background-position: 100% 0; } 55%, 100% { background-position: -100% 0; } }
 
+.hero .eyebrow { margin-bottom: .7rem; }
 .hero h1 {
-  font-size: clamp(2.6rem, 7vw, 5.2rem);
-  margin-bottom: 1.2rem;
+  font-size: clamp(1.8rem, 4.4vw, 3.2rem);
+  margin-bottom: .7rem;
 }
 .hero h1 em { font-style: italic; color: var(--gold-bright); }
-.hero p { margin: 0 auto 2.2rem; max-width: 560px; }
+.hero p { margin: 0 auto 1rem; max-width: 540px; font-size: clamp(.95rem, 1.5vw, 1.05rem); }
 .hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 
 .scroll-hint {
-  position: absolute; bottom: 1.6rem; left: 50%; transform: translateX(-50%);
+  position: absolute; bottom: 1.4rem; left: 50%; transform: translateX(-50%);
   font-size: .64rem; letter-spacing: .3em; text-transform: uppercase; color: var(--mute);
   display: flex; flex-direction: column; align-items: center; gap: .6rem; z-index: 2;
 }
+@media (max-height: 810px) { .scroll-hint { display: none; } }
 .scroll-hint span { width: 1px; height: 34px; background: linear-gradient(var(--gold), transparent); animation: drop 2s ease-in-out infinite; }
 @keyframes drop { 0%,100% { opacity: .3; transform: scaleY(.6); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
 
