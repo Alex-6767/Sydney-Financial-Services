@@ -45,46 +45,35 @@
     revealEls.forEach((el) => el.classList.add("in"));
   }
 
-  /* ---- holographic medallion: spins continuously, accelerates on scroll ----
-     angular speed = base + (scroll depth * depthFactor) + short-lived scroll velocity kick.
-     The further down the page, the faster the steady rotation. */
+  /* ---- holographic medallion ----
+     Smooth continuous 3D flip on the X axis. As you scroll down the hero it
+     tumbles a little faster, zooms in to fill the screen, then fades so the
+     page below stays readable. */
+  const holo = document.querySelector(".holo");
   const spinner = document.querySelector(".holo-spin");
+  const hero = document.querySelector(".hero");
   if (spinner && !reduce) {
-    let angle = 0;
-    let lastScroll = window.scrollY;
-    let velocity = 0;     // deg/frame kick from scroll movement
-    let lastT = performance.now();
+    let t0 = performance.now();
+    let curScale = 1, curOpacity = 1;
 
-    const BASE = 0.12;        // idle deg per frame
-    const DEPTH = 2.6;        // max extra deg per frame at full scroll depth
-    const KICK = 0.06;        // how strongly raw scroll movement adds spin
-    const FRICTION = 0.92;    // velocity decay
+    function frame(now) {
+      const elapsed = now - t0;                 // ms since load
+      const heroH = (hero ? hero.offsetHeight : window.innerHeight);
+      const p = Math.min(1, Math.max(0, window.scrollY / (heroH * 0.9))); // 0→1 through hero
 
-    window.addEventListener(
-      "scroll",
-      () => {
-        const now = window.scrollY;
-        velocity += Math.abs(now - lastScroll) * KICK;
-        lastScroll = now;
-      },
-      { passive: true }
-    );
+      // smooth base spin on the Y axis (~60°/s) + extra turn driven by scroll depth
+      const spinY = elapsed * 0.06 + p * 320;
 
-    const maxScroll = () =>
-      Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      // zoom in to fill the screen, then fade out over the last stretch
+      const targetScale = 1 + p * 4.6;
+      const targetOpacity = p < 0.68 ? 1 : Math.max(0, 1 - (p - 0.68) / 0.32);
 
-    function frame(t) {
-      const dt = Math.min(2.5, (t - lastT) / 16.67); // normalise to ~60fps
-      lastT = t;
+      curScale += (targetScale - curScale) * 0.12;
+      curOpacity += (targetOpacity - curOpacity) * 0.16;
 
-      const depth = Math.min(1, window.scrollY / maxScroll()); // 0 → 1 down the page
-      const speed = BASE + depth * DEPTH + velocity;
-
-      angle = (angle + speed * dt) % 360;
-      spinner.style.transform = "rotate(" + angle.toFixed(2) + "deg)";
-
-      velocity *= FRICTION;
-      if (velocity < 0.001) velocity = 0;
+      spinner.style.transform =
+        "rotateY(" + spinY.toFixed(2) + "deg) scale(" + curScale.toFixed(3) + ")";
+      if (holo) holo.style.opacity = curOpacity.toFixed(3);
 
       requestAnimationFrame(frame);
     }
