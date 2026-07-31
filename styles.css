@@ -83,7 +83,7 @@ section { position: relative; }
   display: flex; align-items: center; justify-content: space-between;
   gap: 1.5rem; height: 84px; position: relative;
 }
-.brand img { height: 48px; width: auto; display: block; }
+.brand img { height: 58px; width: auto; display: block; }
 .nav-links {
   display: flex; align-items: center; gap: 2.2rem;
   list-style: none; margin: 0; padding: 0;
@@ -117,13 +117,17 @@ section { position: relative; }
 .nav-toggle span { display: block; width: 24px; height: 1.5px; background: var(--white); margin: 5px 0; transition: .3s var(--ease); }
 
 /* ---------- hero ---------- */
+/* tall wrapper gives scroll room for the pinned "engulf" moment */
+.hero-pin { position: relative; height: 260vh; }
 .hero {
-  min-height: 100svh;
+  position: sticky; top: 0;
+  height: 100svh;
   display: grid; place-items: center;
   text-align: center;
-  padding: 8rem var(--pad) 6rem;
-  position: relative; overflow: hidden;
+  padding: 7rem var(--pad) 5rem;
+  overflow: hidden;
 }
+.hero-copy { transition: opacity .2s linear; will-change: opacity; }
 .hero-glow {
   position: absolute; inset: 0; pointer-events: none;
   background:
@@ -135,9 +139,9 @@ section { position: relative; }
 /* holographic medallion */
 .holo {
   position: relative;
-  width: clamp(220px, 42vw, 400px);
+  width: clamp(280px, 48vw, 480px);
   aspect-ratio: 1;
-  margin: 0 auto 2.5rem;
+  margin: 0 auto 2rem;
   perspective: 1100px;
   will-change: opacity;
 }
@@ -181,8 +185,8 @@ section { position: relative; }
   animation: sheen 5.5s var(--ease) infinite;
 }
 .holo-ring {
-  position: absolute; inset: 4%; border-radius: 50%;
-  box-shadow: 0 0 60px 8px rgba(201,162,75,.12) inset, 0 0 40px rgba(127,215,255,.08);
+  position: absolute; inset: 15%; border-radius: 50%;
+  box-shadow: 0 0 50px 6px rgba(201,162,75,.10) inset, 0 0 34px rgba(127,215,255,.07);
 }
 @keyframes holoHue { to { filter: saturate(1.15) brightness(1.1) hue-rotate(360deg); } }
 @keyframes sheen { 0% { background-position: 100% 0; } 55%, 100% { background-position: -100% 0; } }
@@ -293,7 +297,7 @@ section { position: relative; }
 /* ---------- footer ---------- */
 .site-footer { background: var(--navy-deep); border-top: 1px solid var(--line); padding: 4rem 0 2rem; }
 .foot-top { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 2.5rem; }
-.foot-top img { height: 40px; margin-bottom: 1.2rem; }
+.foot-top img { height: 54px; margin-bottom: 1.2rem; }
 .foot-col h4 { font-family: "Montserrat", sans-serif; font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); font-weight: 500; margin-bottom: 1.2rem; }
 .foot-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .7rem; }
 .foot-col a, .foot-col li { color: var(--mute); font-size: .92rem; }
@@ -313,6 +317,7 @@ section { position: relative; }
   .split .media { order: -1; max-width: 360px; }
 }
 @media (max-width: 640px) {
+  .brand img { height: 44px; }
   .nav-links, .nav > .btn { display: none; }
   .nav-toggle { display: block; }
   .mobile-open .nav-links {
@@ -341,4 +346,7 @@ section { position: relative; }
   * { animation: none !important; scroll-behavior: auto; }
   .holo-spin { transform: none !important; }
   .reveal, .js .reveal { opacity: 1 !important; transform: none !important; }
+  .hero-pin { height: auto !important; }
+  .hero { position: static !important; height: auto !important; min-height: 100svh; }
+  .hero-copy, .holo { opacity: 1 !important; }
 }
