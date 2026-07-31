@@ -46,34 +46,47 @@
   }
 
   /* ---- holographic medallion ----
-     Smooth continuous 3D flip on the X axis. As you scroll down the hero it
-     tumbles a little faster, zooms in to fill the screen, then fades so the
-     page below stays readable. */
+     At rest: a slow, gentle Y-axis spin.
+     On scroll, the page pins (the hero is sticky over a tall wrapper) so it
+     appears to hold still while the emblem speeds up, grows to engulf the
+     whole screen, and fades. After that the page carries on scrolling. */
+  const pin = document.querySelector(".hero-pin");
   const holo = document.querySelector(".holo");
   const spinner = document.querySelector(".holo-spin");
-  const hero = document.querySelector(".hero");
-  if (spinner && !reduce) {
-    let t0 = performance.now();
+  const heroCopy = document.querySelector(".hero-copy");
+  const scrollHint = document.querySelector(".scroll-hint");
+
+  if (spinner && pin && !reduce) {
+    const t0 = performance.now();
     let curScale = 1, curOpacity = 1;
 
     function frame(now) {
-      const elapsed = now - t0;                 // ms since load
-      const heroH = (hero ? hero.offsetHeight : window.innerHeight);
-      const p = Math.min(1, Math.max(0, window.scrollY / (heroH * 0.9))); // 0→1 through hero
+      const elapsed = now - t0;
 
-      // smooth base spin on the Y axis (~60°/s) + extra turn driven by scroll depth
-      const spinY = elapsed * 0.06 + p * 320;
+      // progress through the pinned zone: 0 at top, 1 as the pin releases
+      const total = pin.offsetHeight - window.innerHeight;
+      const scrolled = Math.min(total, Math.max(0, -pin.getBoundingClientRect().top));
+      const p = total > 0 ? scrolled / total : 0;
 
-      // zoom in to fill the screen, then fade out over the last stretch
-      const targetScale = 1 + p * 4.6;
-      const targetOpacity = p < 0.68 ? 1 : Math.max(0, 1 - (p - 0.68) / 0.32);
+      // gentle constant spin (~18s/turn) that speeds up as you scroll in
+      const spinY = elapsed * 0.02 + p * 540;
 
-      curScale += (targetScale - curScale) * 0.12;
-      curOpacity += (targetOpacity - curOpacity) * 0.16;
+      // ease-in growth so it stays calm at first, then rushes to engulf
+      const targetScale = 1 + p * p * 11;
+      // hold fully visible while it grows, then dissolve near the end
+      const targetOpacity = p < 0.62 ? 1 : Math.max(0, 1 - (p - 0.62) / 0.34);
+
+      curScale += (targetScale - curScale) * 0.14;
+      curOpacity += (targetOpacity - curOpacity) * 0.18;
 
       spinner.style.transform =
         "rotateY(" + spinY.toFixed(2) + "deg) scale(" + curScale.toFixed(3) + ")";
       if (holo) holo.style.opacity = curOpacity.toFixed(3);
+
+      // fade the headline/buttons out quickly as the emblem takes over
+      const textOp = Math.max(0, 1 - p / 0.26);
+      if (heroCopy) heroCopy.style.opacity = textOp.toFixed(3);
+      if (scrollHint) scrollHint.style.opacity = textOp.toFixed(3);
 
       requestAnimationFrame(frame);
     }
